@@ -21,6 +21,7 @@ import { useArtifact } from '@/hooks/use-artifact';
 import equal from 'fast-deep-equal';
 import { SpreadsheetEditor } from './sheet-editor';
 import { ImageEditor } from './image-editor';
+import { RealEstatePreview } from './real-estate-preview';
 
 interface DocumentPreviewProps {
   isReadonly: boolean;
@@ -242,6 +243,7 @@ const DocumentContent = ({ document }: { document: Document }) => {
     {
       'p-4 sm:px-14 sm:py-16': document.kind === 'text',
       'p-0': document.kind === 'code',
+      'h-[60%] w-[100%]': document.kind === 'real-estate',
     },
   );
 
@@ -279,6 +281,18 @@ const DocumentContent = ({ document }: { document: Document }) => {
           status={artifact.status}
           isInline={true}
         />
+      ) : document.kind === 'real-estate' ? (
+        <div className="p-4">
+          {document.content && (() => {
+            try {
+              const data = JSON.parse(document.content);
+              return <RealEstatePreview results={data.listings} />;
+            } catch (e) {
+              console.error('Failed to parse real estate data:', e);
+              return null;
+            }
+          })()}
+        </div>
       ) : null}
     </div>
   );

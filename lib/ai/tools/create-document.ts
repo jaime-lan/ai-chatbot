@@ -15,13 +15,14 @@ interface CreateDocumentProps {
 export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
   tool({
     description:
-      'Create a document for a writing or content creation activities. This tool will call other functions that will generate the contents of the document based on the title and kind.',
+      'Create a document for a writing or content creation activities. This tool will call other functions that will generate the contents of the document based on the title and kind. **If called for real estate, please provide original user query as the title.**',
     parameters: z.object({
       title: z.string(),
       kind: z.enum(artifactKinds),
     }),
     execute: async ({ title, kind }) => {
       const id = generateUUID();
+      const skipAgentResponse = kind === 'real-estate';
 
       dataStream.writeData({
         type: 'kind',
@@ -65,7 +66,7 @@ export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
         id,
         title,
         kind,
-        content: 'A document was created and is now visible to the user.',
+        content: skipAgentResponse ? 'A document was created and is now visible to the user. Return **empty string** as the response.' : 'A document was created and is now visible to the user.',
       };
     },
   });

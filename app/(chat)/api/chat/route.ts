@@ -76,7 +76,6 @@ export async function POST(request: Request) {
                 'updateDocument',
                 'requestSuggestions',
                 'planFlight',
-                'findRealEstate',
               ],
         experimental_transform: smoothStream({ chunking: 'word' }),
         experimental_generateMessageId: generateUUID,
@@ -89,7 +88,6 @@ export async function POST(request: Request) {
             dataStream,
           }),
           planFlight,
-          findRealEstate,
         },
         onFinish: async ({ response, reasoning }) => {
           if (session.user?.id) {

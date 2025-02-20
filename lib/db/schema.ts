@@ -9,8 +9,6 @@ import {
   primaryKey,
   foreignKey,
   boolean,
-  vector,
-  index,
 } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('User', {
@@ -74,7 +72,7 @@ export const document = pgTable(
     createdAt: timestamp('createdAt').notNull(),
     title: text('title').notNull(),
     content: text('content'),
-    kind: varchar('text', { enum: ['text', 'code', 'image', 'sheet'] })
+    kind: varchar('text', { enum: ['text', 'code', 'image', 'sheet', 'real-estate'] })
       .notNull()
       .default('text'),
     userId: uuid('userId')
@@ -115,19 +113,3 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
-
-export const memoriesTable = pgTable("memories", {
-  id: uuid('id').primaryKey().defaultRandom(),
-  content: text('content').notNull(),
-  embedding: vector('embedding', { dimensions: 256 }).notNull(),
-  createdAt: timestamp('created_at').notNull().defaultNow(),
-  updatedAt: timestamp('updated_at')
-    .notNull()
-    .defaultNow()
-    .$onUpdate(() => new Date()),
-}, (table) => ({
-    embeddingIndex: index("embedding_index").using("hnsw", table.embedding.op("vector_ip_ops"))
-}));
-// Define types for insert and select operations
-export type InsertMemories = typeof memoriesTable.$inferInsert;
-export type SelectMemories = typeof memoriesTable.$inferSelect;

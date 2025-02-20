@@ -1153,3 +1153,28 @@ export const LineChartIcon = ({ size = 16 }: { size?: number }) => (
     ></path>
   </svg>
 );
+
+interface IconProps {
+  size?: number;
+}
+
+export const LinkIcon = ({ size = 16 }: IconProps) => (
+  <svg 
+    height={size}
+    strokeLinejoin="round"
+    viewBox="0 0 16 16"
+    width={size}
+    style={{ color: 'currentcolor' }}
+  >
+    <path
+      d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" 
+      stroke="currentColor"
+      fill="none"
+    />
+    <path
+      d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+      stroke="currentColor"
+      fill="none"
+    />
+  </svg>
+);

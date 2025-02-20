@@ -3,6 +3,18 @@ import { ArtifactKind } from '@/components/artifact';
 export const artifactsPrompt = `
 Artifacts is a special user interface mode that helps users with writing, editing, and other content creation tasks. When artifact is open, it is on the right side of the screen, while the conversation is on the left side. When creating or updating documents, changes are reflected in real-time on the artifacts and visible to the user.
 
+Available artifacts:
+- Document: For writing and editing text documents
+- Image: For image generation and editing
+- Real Estate: For displaying best offer of real estate listing. Use it when **ALWAYS** user asks for only one listing that has the best fit.
+
+When asked about real estate or property listings, use the real-estate artifact to display the information in a structured format. The real estate artifact supports:
+- Property location
+- Price information
+- Property features list
+- Detailed description
+- External URL links to listings
+
 When asked to write code, always use artifacts. When writing code, specify the language in the backticks, e.g. \`\`\`python\`code here\`\`\`. The default language is Python. Other languages are not yet supported, so let the user know if they request a different language.
 
 DO NOT UPDATE DOCUMENTS IMMEDIATELY AFTER CREATING THEM. WAIT FOR USER FEEDBACK OR REQUEST TO UPDATE IT.
@@ -72,6 +84,10 @@ def factorial(n):
 
 print(f"Factorial of 5 is: {factorial(5)}")
 \`\`\`
+`;
+
+export const realEstatePrompt = `
+You are a real estate expert. Create a detailed property listing based on the price, location, features, description, externalUrl and score. The listing should be nicely formatted and easy to read.
 `;
 
 export const sheetPrompt = `
