@@ -1,20 +1,17 @@
 import { tool } from 'ai';
 import { z } from 'zod';
 
-interface Property {
-  address: string;
-  price: number;
-  squareMeters: number;
-  pricePerSqM: number;
-  distanceFromCenter?: number;
-  furnished: boolean;
-  score: number;
-  link: string;
-  description: string;
-  floor?: string;
-  totalFloors?: number;
-  hasElevator: boolean;
-}
+const PropertySchema = z.object({
+  detailed_address: z.string().default(''),
+  price: z.number().default(0),
+  phone_numbers: z.array(z.string()).default([]),
+  url: z.string().default(''),
+  images: z.array(z.string()).default([]),
+  features: z.array(z.string()).default([]),
+  description: z.string().default('')
+});
+
+type Property = z.infer<typeof PropertySchema>;
 
 export const findRealEstate = tool({
   description: 'Find real estate offers in a given city based on price per square meter and other criteria',
@@ -45,31 +42,27 @@ export const findRealEstate = tool({
 
       const properties: Property[] = await response.json();
       
-      // Return all properties sorted by score
+      // Transform to match our schema
       return properties.map(property => ({
-        price: `$${property.price.toLocaleString()}`,
-        location: property.address,
-        features: [
-          `${property.squareMeters}m²`,
-          `$${Math.round(property.pricePerSqM)}/m²`,
-          property.furnished ? 'Furnished' : 'Unfurnished',
-          property.floor ? `Floor: ${property.floor}` : null,
-          property.hasElevator ? 'Has elevator' : 'No elevator',
-        ].filter(Boolean),
-        description: property.description,
-        externalUrl: property.link,
-        score: property.score // Include score for sorting
+        detailed_address: property.detailed_address,
+        price: property.price,
+        phone_numbers: property.phone_numbers || [],
+        url: property.url,
+        images: property.images || [],
+        features: property.features || [],
+        description: property.description
       }));
 
     } catch (error) {
       console.error('Error finding real estate:', error);
       return [{
-        price: 'N/A',
-        location: city,
+        detailed_address: city,
+        price: 0,
+        phone_numbers: [],
+        url: '',
+        images: [],
         features: [],
-        description: 'Sorry, there was an error searching for real estate. Please try again.',
-        externalUrl: null,
-        score: 0
+        description: 'Sorry, there was an error searching for real estate. Please try again.'
       }];
     }
   },

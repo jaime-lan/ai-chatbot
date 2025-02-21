@@ -5,16 +5,15 @@ import { createDocumentHandler } from '@/lib/artifacts/server';
 import { streamText } from 'ai';
 import { z } from 'zod';
 
-const listingSchema = z.object({
-  listings: z.array(z.object({
-    price: z.string(),
-    location: z.string(),
-    features: z.array(z.string()),
-    description: z.string(),
-    externalUrl: z.string().optional(),
-    score: z.number(),
-  })),
-});
+const listingSchema = z.array(z.object({
+  detailed_address: z.string().default(''),
+  price: z.number().default(0),
+  phone_numbers: z.array(z.string()).default([]),
+  url: z.string().default(''),
+  images: z.array(z.string()).default([]),
+  features: z.array(z.string()).default([]),
+  description: z.string().default('')
+}));
 
 export const realEstateDocumentHandler = createDocumentHandler<'real-estate'>({
   kind: 'real-estate',
@@ -35,8 +34,18 @@ export const realEstateDocumentHandler = createDocumentHandler<'real-estate'>({
     for await (const delta of fullStream) {
       if (delta.type === 'tool-result') {
         const listings = delta.result;
-        const sortedListings = listings?.filter(Boolean).sort((a, b) => (b?.score ?? 0) - (a?.score ?? 0)) || [];
-        const content = JSON.stringify({ listings: sortedListings }, null, 2);
+        // console.log('Tool result:', delta);
+        // console.log('Raw listings:', listings);
+        
+        // Validate the array directly
+        const parsed = listingSchema.safeParse(listings);
+        if (!parsed.success) {
+          console.error('Invalid listing data:', parsed.error);
+          return '';
+        }
+        
+        // Wrap the validated listings in an object for the client
+        const content = JSON.stringify({ listings: parsed.data }, null, 2);
         
         dataStream.writeData({
           type: 'real-estate-delta',
@@ -65,8 +74,17 @@ export const realEstateDocumentHandler = createDocumentHandler<'real-estate'>({
     for await (const delta of fullStream) {
       if (delta.type === 'tool-result') {
         const listings = delta.result;
-        const sortedListings = listings?.filter(Boolean).sort((a, b) => (b?.score ?? 0) - (a?.score ?? 0)) || [];
-        const content = JSON.stringify({ listings: sortedListings }, null, 2);
+        console.log('Raw listings:', listings);
+        
+        // Validate the array directly
+        const parsed = listingSchema.safeParse(listings);
+        if (!parsed.success) {
+          console.error('Invalid listing data:', parsed.error);
+          return '';
+        }
+        
+        // Wrap the validated listings in an object for the client
+        const content = JSON.stringify({ listings: parsed.data }, null, 2);
         
         dataStream.writeData({
           type: 'real-estate-delta',

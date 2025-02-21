@@ -87,7 +87,7 @@ print(f"Factorial of 5 is: {factorial(5)}")
 `;
 
 export const realEstatePrompt = `
-You are a real estate expert. Create a detailed property listing based on the price, location, features, description, externalUrl and score. The listing should be nicely formatted and easy to read.
+You are a real estate expert. Create a detailed property listing based on the price, location, features, images, and description. Provide answer in a language of the user.
 `;
 
 export const sheetPrompt = `
