@@ -74,7 +74,7 @@ export const realEstateDocumentHandler = createDocumentHandler<'real-estate'>({
     for await (const delta of fullStream) {
       if (delta.type === 'tool-result') {
         const listings = delta.result;
-        console.log('Raw listings:', listings);
+        // console.log('Raw listings:', listings);
         
         // Validate the array directly
         const parsed = listingSchema.safeParse(listings);

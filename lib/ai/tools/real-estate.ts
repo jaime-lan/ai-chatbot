@@ -14,15 +14,19 @@ const PropertySchema = z.object({
 type Property = z.infer<typeof PropertySchema>;
 
 export const findRealEstate = tool({
-  description: 'Find real estate offers in a given city based on price per square meter and other criteria',
+  description: 'Search for real estate listings based on user criteria',
   parameters: z.object({
-    city: z.string().describe('City to search in'),
-    minPricePerSqM: z.number().describe('Minimum price per square meter'),
-    maxPricePerSqM: z.number().describe('Maximum price per square meter'),
-    minSquareMeters: z.number().optional().describe('Minimum size of property in square meters'),
-    maxDistanceToCenter: z.number().optional().describe('Maximum distance to city center in kilometers'),
+    city: z.string().describe('City name (e.g. Podgorica, Nikšić)'),
+    query: z.string().describe('Original user query'),
+    minSize: z.number().optional().describe('Minimum size in square meters'),
+    maxSize: z.number().optional().describe('Maximum size in square meters'),
+    minPrice: z.number().optional().describe('Minimum price in EUR'),
+    maxPrice: z.number().optional().describe('Maximum price in EUR'),
+    rooms: z.number().optional().describe('Least required number of rooms'),
+    furnished: z.boolean().optional().describe('Whether the property is furnished'),
+    floor: z.number().optional().describe('Floor number (0 for ground floor)'),
   }),
-  execute: async ({ city, minPricePerSqM, maxPricePerSqM, minSquareMeters, maxDistanceToCenter }) => {
+  execute: async ({ city, query, minPrice, maxPrice, minSize, maxSize, rooms, furnished, floor }) => {
     try {
       const response = await fetch('http://localhost:3000/api/chat', {
         method: 'POST',
@@ -30,9 +34,17 @@ export const findRealEstate = tool({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: `Find real estate in ${city} with price between $${minPricePerSqM}-${maxPricePerSqM}/m²${
-            minSquareMeters ? `, min size ${minSquareMeters}m²` : ''
-          }${maxDistanceToCenter ? `, max ${maxDistanceToCenter}km from center` : ''}`,
+          message: `Find properties in ${city}${
+            minPrice || maxPrice ? ` with price ${minPrice ? `from €${minPrice}` : ''}${maxPrice ? ` up to €${maxPrice}` : ''}` : ''
+          }${
+            minSize || maxSize ? ` and size ${minSize ? `from ${minSize}m²` : ''}${maxSize ? ` up to ${maxSize}m²` : ''}` : ''
+          }${
+            rooms ? ` with at least ${rooms} rooms` : ''
+          }${
+            furnished ? ' that are furnished' : ''
+          }${
+            typeof floor === 'number' ? ` on floor ${floor}` : ''
+          }. ${query}`
         }),
       });
 
@@ -42,7 +54,6 @@ export const findRealEstate = tool({
 
       const properties: Property[] = await response.json();
       
-      // Transform to match our schema
       return properties.map(property => ({
         detailed_address: property.detailed_address,
         price: property.price,
