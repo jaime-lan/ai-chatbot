@@ -7,6 +7,7 @@ import { useState } from 'react';
 // Define interfaces for type safety
 interface RealEstateMetadata {
   listings: Array<{
+    listingId: number,
     detailed_address: string,
     price: number,
     phone_numbers: string[],
@@ -125,6 +126,14 @@ export const realEstateArtifact = new Artifact<'real-estate', RealEstateMetadata
                                 <span>View listing</span>
                               </a>
                             )}
+                            <span className={`px-3 py-1 text-sm font-medium rounded-md ${
+                              index === 0 ? 'bg-emerald-100 text-emerald-700' :
+                              index === 1 ? 'bg-blue-100 text-blue-700' :
+                              index === 2 ? 'bg-amber-100 text-amber-700' :
+                              'bg-gray-100 text-gray-700'
+                            }`}>
+                              ID: {listing.listingId}
+                            </span>
                           </div>
                         </div>
                         

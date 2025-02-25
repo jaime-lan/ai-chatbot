@@ -2,6 +2,7 @@ import { tool } from 'ai';
 import { z } from 'zod';
 
 const PropertySchema = z.object({
+  listingId: z.number().default(0),
   detailed_address: z.string().default(''),
   price: z.number().default(0),
   phone_numbers: z.array(z.string()).default([]),
@@ -55,6 +56,7 @@ export const findRealEstate = tool({
       const properties: Property[] = await response.json();
       
       return properties.map(property => ({
+        listingId: property.listingId,
         detailed_address: property.detailed_address,
         price: property.price,
         phone_numbers: property.phone_numbers || [],
@@ -67,6 +69,7 @@ export const findRealEstate = tool({
     } catch (error) {
       console.error('Error finding real estate:', error);
       return [{
+        listingId: 0,
         detailed_address: city,
         price: 0,
         phone_numbers: [],

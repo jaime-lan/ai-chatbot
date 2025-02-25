@@ -1,11 +1,12 @@
 import { myProvider } from '@/lib/ai/models';
 import { realEstatePrompt } from '@/lib/ai/prompts';
-import { findRealEstate } from '@/lib/ai/tools/real-estate';
+import { findRealEstate } from '@/lib/ai/tools/real-estate-offer';
 import { createDocumentHandler } from '@/lib/artifacts/server';
 import { streamText } from 'ai';
 import { z } from 'zod';
 
 const listingSchema = z.array(z.object({
+  listingId: z.number().default(0),
   detailed_address: z.string().default(''),
   price: z.number().default(0),
   phone_numbers: z.array(z.string()).default([]),
