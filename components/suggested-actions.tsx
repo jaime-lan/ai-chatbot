@@ -22,18 +22,28 @@ function PureSuggestedActions({ chatId, append }: SuggestedActionsProps) {
     },
     {
       title: 'Write code to',
-      label: `demonstrate djikstra's algorithm`,
+      label: `demonstrate djikstra's algorithm.`,
       action: `Write code to demonstrate djikstra's algorithm`,
     },
     {
       title: 'Help me write an essay',
-      label: `about silicon valley`,
+      label: `about silicon valley.`,
       action: `Help me write an essay about silicon valley`,
     },
     {
       title: 'What is the weather',
       label: 'in San Francisco?',
       action: 'What is the weather in San Francisco?',
+    },
+    {
+      title: 'Help me find a real estate',
+      label: 'offer in Podgorica.',
+      action: 'Help me find a real estate offer in Podgorica',
+    },
+    {
+      title: 'Help me with the',
+      label: 'listing history.',
+      action: 'Find me the listing history of the real estate offer',
     },
   ];
 

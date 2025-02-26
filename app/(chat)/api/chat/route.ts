@@ -25,7 +25,6 @@ import { createDocument } from '@/lib/ai/tools/create-document';
 import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
-import { planFlight } from '@/lib/ai/tools/plan-flight';
 import { getRealEstateReview } from '@/lib/ai/tools/real-estate-review';
 export const maxDuration = 60;
 
@@ -75,7 +74,6 @@ export async function POST(request: Request) {
                 'createDocument',
                 'updateDocument',
                 'requestSuggestions',
-                'planFlight',
                 'getRealEstateReview',
               ],
         experimental_transform: smoothStream({ chunking: 'word' }),
@@ -88,7 +86,6 @@ export async function POST(request: Request) {
             session,
             dataStream,
           }),
-          planFlight,
           getRealEstateReview,
         },
         onFinish: async ({ response, reasoning }) => {

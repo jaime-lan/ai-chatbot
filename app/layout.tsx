@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Toaster } from 'sonner';
+import 'leaflet/dist/leaflet.css';
 
 import { ThemeProvider } from '@/components/theme-provider';
 
