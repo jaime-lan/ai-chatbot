@@ -299,7 +299,10 @@ export const ListingPage = ({ listings }: ListingPageProps) => {
               width: '100%',
               minHeight: '400px'
             }}>
-              <Map address={listing.detailed_address} />
+              <Map 
+                address={listing.detailed_address} 
+                key={listing.listingId}
+              />
             </div>
           </div>
         </div>
