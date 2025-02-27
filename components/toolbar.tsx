@@ -18,7 +18,7 @@ import {
   useState,
 } from 'react';
 import { useOnClickOutside } from 'usehooks-ts';
-import { nanoid } from 'nanoid';
+import { customAlphabet } from 'nanoid';
 import {
   Tooltip,
   TooltipContent,
@@ -144,7 +144,8 @@ const Tool = ({
   );
 };
 
-const randomArr = [...Array(6)].map((x) => nanoid(5));
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 5);
+const randomArr = [...Array(6)].map(() => nanoid());
 
 const ReadingLevelSelector = ({
   setSelectedTool,
