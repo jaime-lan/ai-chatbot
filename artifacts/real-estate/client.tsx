@@ -13,7 +13,9 @@ interface RealEstateMetadata {
     url: string,
     images: string[],
     features: string[],
-    description: string
+    description: string,
+    publish_date: string,
+    seen: number
   }>;
 }
 

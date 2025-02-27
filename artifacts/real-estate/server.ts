@@ -13,7 +13,9 @@ const listingSchema = z.array(z.object({
   url: z.string().default(''),
   images: z.array(z.string()).default([]),
   features: z.array(z.string()).default([]),
-  description: z.string().default('')
+  description: z.string().default(''),
+  publish_date: z.string().default(''),
+  seen: z.number().default(0)
 }));
 
 export const realEstateDocumentHandler = createDocumentHandler<'real-estate'>({

@@ -1,0 +1,30 @@
+---
+description: Adding regular tool
+globs: lib/ai/tools, app/chat/api/chat/route, components/message.tsx, components/ 
+alwaysApply: false
+---
+The following are the rules for creating a new tool:
+
+Step 1:
+- Path Information:
+  1. Create tool file as: lib/ai/tools/new-tool.ts
+  2. Ask user about detail description of the tool.
+  3. Based on the user query write the tool code. Also, you can find similar codes in the lib/ai/tools/
+  4. Add all necessary inports
+- Make sure you have all information:
+  1. If not available, ask user about required information for the tool.
+  2. Check required and otional input fields
+  3. If the should target specific endpoint for obtaining results, ask for target http address
+  4. Create input zod schema, based on the required info
+  5. Create output zod schema based on the information provided from the user, and the neccessary fields including type of the fields.
+- Add error handlin:
+  1. log messages, try catch structure
+
+Step 2:
+- Specify to model that it has available tools in the lib/ai/tools
+
+Step 3:
+- Ouput format:
+ 1. Ask user if he wants to add preview change of the tool result.
+ 2. If the anwer is yes, create a file in components/new-tool-preview.ts that will have rendering of the tool result.
+ 3. Specify display format of the tool result. This should be specified in the components/message.tsx, if no preview is requested by user, set preview null for the created tool. If preview is requested use the format specified in the components/new-tool-preview.ts

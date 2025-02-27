@@ -30,6 +30,8 @@ interface ListingPageProps {
     images: string[];
     features: string[];
     description: string;
+    publish_date: string;
+    seen: number;
   }>;
 }
 
@@ -47,7 +49,7 @@ export const ListingPage = ({ listings }: ListingPageProps) => {
   const listing = listings[currentIndex];
   if (!listing) return null;
 
-  console.log('Current listing images:', listing.images);
+  // console.log('Current listing images:', listing.images);
 
   return (
     <div style={{ minHeight: '100vh', paddingBottom: '48px' }}>
@@ -85,16 +87,14 @@ export const ListingPage = ({ listings }: ListingPageProps) => {
           height: '55%',
           overflowY: 'auto',
           position: 'relative',
-          marginTop: '10%'
+          marginTop: '10%',
+          display: 'flex',
+          gap: '16px',
+          paddingLeft: '16px',
+          paddingRight: '16px'
         }}>
-          <div style={{ 
-            display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '16px',
-            paddingLeft: '16px',
-            paddingRight: '16px'
-          }}>
-            {/* Left Column - Description */}
+          {/* Left Column - Description */}
+          <div style={{ flex: '1', width: '50%' }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', width: '100%' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <div style={{
@@ -200,6 +200,24 @@ export const ListingPage = ({ listings }: ListingPageProps) => {
                     fontSize: '0.9375rem',
                     whiteSpace: 'pre-line'
                   }}>{listing.description}</p>
+                  <div style={{
+                    marginTop: '1rem',
+                    display: 'flex',
+                    gap: '1rem',
+                    fontSize: '0.875rem',
+                    color: '#6b7280',
+                    borderTop: '1px solid #e5e7eb',
+                    paddingTop: '0.75rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span>Published:</span>
+                      <span style={{ color: '#4b5563', fontWeight: 500 }}>{listing.publish_date}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      <span>Views:</span>
+                      <span style={{ color: '#4b5563', fontWeight: 500 }}>{listing.seen}</span>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -291,19 +309,21 @@ export const ListingPage = ({ listings }: ListingPageProps) => {
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Right Column - Map */}
-            <div style={{ 
-              borderRadius: '12px',
-              height: '100%',
-              width: '100%',
-              minHeight: '400px'
-            }}>
-              <Map 
-                address={listing.detailed_address} 
-                key={listing.listingId}
-              />
-            </div>
+          {/* Right Column - Map */}
+          <div style={{ 
+            flex: '1',
+            width: '50%',
+            borderRadius: '12px',
+            height: '100%',
+            minHeight: '300px'
+          }}>
+            <Map 
+              address={listing.detailed_address} 
+              key={listing.listingId}
+              containerId="map-container"
+            />
           </div>
         </div>
       </div>
@@ -317,7 +337,8 @@ export const ListingPage = ({ listings }: ListingPageProps) => {
         backgroundColor: 'white',
         borderTop: '1px solid #e5e7eb',
         boxShadow: '0 -2px 4px -1px rgba(0, 0, 0, 0.05)',
-        height: '35px'
+        height: '35px',
+        zIndex: 1000
       }}>
         <div style={{ 
           maxWidth: '1200px', 

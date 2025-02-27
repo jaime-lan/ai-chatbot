@@ -24,6 +24,7 @@ interface MapProps {
     lat: number;
     lng: number;
   };
+  containerId: string;
 }
 
 interface BoundaryFeature {
@@ -40,7 +41,7 @@ interface BoundaryFeature {
   };
 }
 
-const Map = ({ address, coordinates }: MapProps) => {
+const Map = ({ address, coordinates, containerId }: MapProps) => {
   const [position, setPosition] = useState<[number, number] | null>(
     coordinates ? [coordinates.lat, coordinates.lng] : null
   );
@@ -176,6 +177,8 @@ const Map = ({ address, coordinates }: MapProps) => {
 
   return (
     <MapContainer
+      id={containerId}
+      key={containerId}
       center={position}
       zoom={15}
       style={{ height: '100%', width: '100%', borderRadius: '12px', zIndex: 1 }}
