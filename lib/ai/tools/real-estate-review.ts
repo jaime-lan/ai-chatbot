@@ -8,7 +8,7 @@ export const getRealEstateReview = tool({
   }),
   execute: async ({ listingId }) => {
     try {
-      const response = await fetch('http://localhost:3000/api/chat', {
+      const response = await fetch('https://real-estate-agent-90r1.onrender.com/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

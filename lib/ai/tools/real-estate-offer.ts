@@ -32,7 +32,7 @@ export const findRealEstate = tool({
   }),
   execute: async ({ city, query, minPrice, maxPrice, minSize, maxSize, rooms, furnished, floor }) => {
     try {
-      const response = await fetch('http://localhost:3000/api/chat', {
+      const response = await fetch('https://real-estate-agent-90r1.onrender.com/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
