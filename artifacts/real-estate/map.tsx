@@ -46,19 +46,32 @@ const MapResizer = () => {
   const map = useMap();
   
   useEffect(() => {
+    let mounted = true;
+    
     const handleResize = () => {
-      if (map) {
-        map.invalidateSize();
+      if (mounted && map) {
+        requestAnimationFrame(() => {
+          if (mounted && map) {
+            map.invalidateSize();
+          }
+        });
       }
     };
 
+    // Add resize listener
     window.addEventListener('resize', handleResize);
     
-    // Initial resize
-    setTimeout(handleResize, 300);
+    // Initial resize with a delay to ensure proper mounting
+    const timer = setTimeout(() => {
+      if (mounted) {
+        handleResize();
+      }
+    }, 500);
     
     return () => {
+      mounted = false;
       window.removeEventListener('resize', handleResize);
+      clearTimeout(timer);
     };
   }, [map]);
 
