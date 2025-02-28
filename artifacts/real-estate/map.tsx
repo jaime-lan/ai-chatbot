@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polygon } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useState } from 'react';
 import L from 'leaflet';
+import { useMap } from 'react-leaflet';
 
 // You'll need to replace this with your actual Geoapify API key
 const GEOAPIFY_API_KEY = process.env.NEXT_PUBLIC_GEOAPIFY_API_KEY;
@@ -40,6 +41,29 @@ interface BoundaryFeature {
     feature_type?: string;
   };
 }
+
+const MapResizer = () => {
+  const map = useMap();
+  
+  useEffect(() => {
+    const handleResize = () => {
+      if (map) {
+        map.invalidateSize();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    
+    // Initial resize
+    setTimeout(handleResize, 300);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [map]);
+
+  return null;
+};
 
 const Map = ({ address, coordinates, containerId }: MapProps) => {
   const [position, setPosition] = useState<[number, number] | null>(
@@ -183,11 +207,21 @@ const Map = ({ address, coordinates, containerId }: MapProps) => {
       zoom={15}
       style={{ height: '100%', width: '100%', borderRadius: '12px', zIndex: 1 }}
       bounds={mapBounds || undefined}
+      attributionControl={true}
+      zoomControl={true}
+      doubleClickZoom={true}
+      scrollWheelZoom={true}
+      dragging={true}
     >
       <TileLayer
         url={`https://maps.geoapify.com/v1/tile/osm-bright/{z}/{x}/{y}.png?apiKey=${GEOAPIFY_API_KEY}`}
         attribution='Powered by <a href="https://www.geoapify.com/" target="_blank">Geoapify</a>'
       />
+      
+      {/* Add the MapResizer component */}
+      <MapResizer />
+      
+      {/* Rest of your map components */}
       {boundary.length > 0 && (
         <Polygon
           positions={boundary}

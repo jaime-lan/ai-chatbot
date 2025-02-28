@@ -11,7 +11,8 @@ const PropertySchema = z.object({
   features: z.array(z.string()).default([]),
   description: z.string().default(''),
   publish_date: z.string().default(''),
-  seen: z.number().default(0)
+  seen: z.number().default(0),
+  source: z.string().default('')
 });
 
 type Property = z.infer<typeof PropertySchema>;
@@ -67,7 +68,8 @@ export const findRealEstate = tool({
         features: property.features || [],
         description: property.description,
         publish_date: property.publish_date,
-        seen: property.seen
+        seen: property.seen,
+        source: property.source
       }));
 
     } catch (error) {
@@ -82,7 +84,8 @@ export const findRealEstate = tool({
         features: [],
         description: 'Sorry, there was an error searching for real estate. Please try again.',
         publish_date: '',
-        seen: 0
+        seen: 0,
+        source: ''
       }];
     }
   },

@@ -15,7 +15,8 @@ const listingSchema = z.array(z.object({
   features: z.array(z.string()).default([]),
   description: z.string().default(''),
   publish_date: z.string().default(''),
-  seen: z.number().default(0)
+  seen: z.number().default(0),
+  source: z.string().default('')
 }));
 
 export const realEstateDocumentHandler = createDocumentHandler<'real-estate'>({
@@ -38,7 +39,7 @@ export const realEstateDocumentHandler = createDocumentHandler<'real-estate'>({
       if (delta.type === 'tool-result') {
         const listings = delta.result;
         // console.log('Tool result:', delta);
-        // console.log('Raw listings:', listings);
+        console.log('Raw listings:', listings);
         
         // Validate the array directly
         const parsed = listingSchema.safeParse(listings);

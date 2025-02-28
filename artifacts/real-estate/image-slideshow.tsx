@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, CSSProperties } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 interface ImageSlideshowProps {
@@ -10,6 +10,17 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
   const [previewIndex, setPreviewIndex] = useState(0);
   const [showPreview, setShowPreview] = useState(false);
   const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -22,7 +33,7 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
     setFailedImages(prev => new Set([...prev, key]));
   };
 
-  const renderImage = (src: string, alt: string, key: string, style: React.CSSProperties, index: number) => {
+  const renderImage = (src: string, alt: string, key: string, style: CSSProperties, index: number) => {
     if (failedImages.has(key) || !src) {
       return (
         <div style={{
@@ -32,7 +43,9 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
           justifyContent: 'center',
           backgroundColor: '#f3f4f6',
           color: '#6b7280',
-          borderRadius: '12px'
+          borderRadius: '12px',
+          width: '100%',
+          height: '100%'
         }}
         onClick={(e: React.MouseEvent<HTMLDivElement>) => {
           e.stopPropagation();
@@ -45,16 +58,29 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
     }
 
     return (
-      <img
-        src={src}
-        alt={alt}
-        style={style}
-        onClick={(e: React.MouseEvent<HTMLImageElement>) => {
-          e.stopPropagation();
-          openPreview(index);
-        }}
-        onError={() => handleImageError(key)}
-      />
+      <div style={{
+        width: '100%',
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+        borderRadius: '12px'
+      }}>
+        <img
+          src={src}
+          alt={alt}
+          style={{
+            ...style,
+            position: 'absolute',
+            top: 0,
+            left: 0
+          }}
+          onClick={(e: React.MouseEvent<HTMLImageElement>) => {
+            e.stopPropagation();
+            openPreview(index);
+          }}
+          onError={() => handleImageError(key)}
+        />
+      </div>
     );
   };
 
@@ -74,111 +100,199 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
     }
   }, [showPreview, handleKeyPress]);
 
-  // When opening preview, set initial preview index
   const openPreview = (index: number) => {
-    // Only open preview if there are images
     if (images && images.length > 0) {
       setPreviewIndex(index);
       setShowPreview(true);
     }
   };
 
+  const containerStyle: CSSProperties = {
+    width: '100%',
+    position: 'relative',
+    height: '100%'
+  };
+
+  const galleryContainerStyle: CSSProperties = {
+    display: 'flex',
+    flexDirection: isMobile ? 'column' : 'row',
+    gap: '8px',
+    height: isMobile ? 'auto' : '400px', // Set a fixed height for non-mobile
+    padding: '0'
+  };
+
+  const mainImageStyle: CSSProperties = {
+    width: isMobile ? '100%' : '50%',
+    height: isMobile ? '300px' : '100%',
+    borderRadius: '12px',
+    position: 'relative',
+    overflow: 'hidden'
+  };
+
+  const gridContainerStyle: CSSProperties = {
+    display: isMobile ? 'none' : 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gridTemplateRows: '1fr 1fr',
+    gap: '8px',
+    width: '50%',
+    height: '100%'
+  };
+
+  const gridItemStyle: CSSProperties = {
+    borderRadius: '12px',
+    position: 'relative',
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%'
+  };
+
+  const mobileIndicatorsStyle: CSSProperties = {
+    display: isMobile ? 'flex' : 'none',
+    justifyContent: 'center',
+    gap: '4px',
+    marginTop: '8px',
+    position: 'absolute',
+    bottom: '16px',
+    left: '0',
+    right: '0',
+    zIndex: 10
+  };
+
+  const indicatorStyle = (isActive: boolean): CSSProperties => ({
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    backgroundColor: isActive ? '#3b82f6' : 'rgba(255, 255, 255, 0.7)',
+    border: 'none',
+    padding: 0,
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  });
+
+  const previewOverlayStyle: CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 50
+  };
+
+  const previewContainerStyle: CSSProperties = {
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
+    padding: isMobile ? '48px 16px' : '48px',
+    pointerEvents: 'none'
+  };
+
+  const previewButtonStyle: CSSProperties = {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: '50%',
+    padding: '12px',
+    cursor: 'pointer',
+    border: 'none',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.2s ease',
+    pointerEvents: 'auto'
+  };
+
+  const imageStyle = (isPreview: boolean = false): CSSProperties => ({
+    width: '100%',
+    height: '100%',
+    objectFit: isPreview ? 'contain' : 'cover',
+    cursor: 'pointer',
+    pointerEvents: 'auto'
+  });
+
   return (
-    <div style={{ width: '100%', position: 'relative' }}>
-      <div style={{ display: 'flex', gap: '16px', padding: '16px', height: '50%' }}>
+    <div style={containerStyle}>
+      <div style={galleryContainerStyle}>
         {/* Main large image - left side */}
-        <div style={{ 
-          width: '50%',
-          backgroundColor: '#f3f4f6',
-          borderRadius: '12px',
-          position: 'relative'
-        }}>
+        <div style={mainImageStyle}>
           {renderImage(
             images?.[currentIndex] || '',
             "Main property view",
             `main-${currentIndex}`,
-            {
-              width: '100%',
-              height: '400px',
-              objectFit: 'cover',
-              borderRadius: '12px',
-              cursor: images?.length ? 'pointer' : 'default'
-            },
+            imageStyle(),
             currentIndex
+          )}
+          {/* Mobile indicators */}
+          {isMobile && (
+            <div style={mobileIndicatorsStyle}>
+              {images?.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentIndex(idx)}
+                  style={indicatorStyle(idx === currentIndex)}
+                />
+              ))}
+            </div>
           )}
         </div>
 
         {/* Right side 2x2 grid */}
-        <div style={{ 
-          display: 'grid', 
-          gridTemplateColumns: '1fr 1fr', 
-          gridTemplateRows: '1fr 1fr',
-          gap: '8px', 
-          width: '50%',
-          height: '400px'
-        }}>
-          {[0, 1, 2].map((offset) => (
-            <div key={`grid-${offset}`} style={{ 
-              height: '196px',
-              backgroundColor: '#f3f4f6',
-              borderRadius: '12px',
-              position: 'relative'
-            }}>
+        <div style={gridContainerStyle}>
+          {[1, 2, 3].map((offset) => (
+            <div key={`grid-${offset}`} style={gridItemStyle}>
               {renderImage(
-                images?.[currentIndex + offset] || '',
+                images?.[currentIndex + offset],
                 `Property view ${offset + 1}`,
                 `thumb-${currentIndex}-${offset}`,
-                {
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  borderRadius: '12px',
-                  cursor: images?.length ? 'pointer' : 'default'
-                },
+                imageStyle(),
                 currentIndex + offset
               )}
             </div>
           ))}
           {/* Last image with overlay */}
-          <div style={{ 
-            height: '196px', 
-            position: 'relative',
-            backgroundColor: '#f3f4f6',
-            borderRadius: '12px'
-          }} onClick={images?.length ? (e: React.MouseEvent<HTMLDivElement>) => openPreview((currentIndex + 4) % (images?.length || 1)) : undefined}>
-            {renderImage(
-              images?.[(currentIndex + 4) % (images?.length || 1)] || '',
-              "Property view 4",
-              `last-${currentIndex}`,
-              {
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                borderRadius: '12px',
-                filter: 'brightness(0.5)',
-                cursor: images?.length ? 'pointer' : 'default'
-              },
-              (currentIndex + 4) % (images?.length || 1)
-            )}
-            {/* Only show overlay if there are actually more images */}
-            {images && images.length > (currentIndex + 5) && (
-              <div style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '24px',
-                fontWeight: '600',
-                cursor: 'pointer'
-              }}>
-                +{images.length - (currentIndex + 5)}
-              </div>
-            )}
+          <div 
+            style={gridItemStyle}
+            onClick={images?.length ? () => openPreview(currentIndex + 4) : undefined}
+          >
+            <div style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              borderRadius: '12px',
+              overflow: 'hidden'
+            }}>
+              {renderImage(
+                images?.[currentIndex + 4],
+                "Property view 4",
+                `last-${currentIndex}`,
+                {
+                  ...imageStyle(),
+                  filter: images?.length > 5 ? 'brightness(0.5)' : 'none'
+                },
+                currentIndex + 4
+              )}
+              
+              {/* Only show overlay if there are actually more images */}
+              {images && images.length > 5 && (
+                <div style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: '24px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  zIndex: 2
+                }}>
+                  +{images.length - 5}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -187,27 +301,17 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
       {showPreview && images && images.length > 0 && (
         <div 
           onClick={() => setShowPreview(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 50
-          }}
+          style={previewOverlayStyle}
         >
-          {/* Stop propagation to prevent closing when clicking the image */}
-          <div onClick={e => e.stopPropagation()}>
+          <div 
+            onClick={e => e.stopPropagation()} 
+            style={previewContainerStyle}
+          >
             {renderImage(
               images[previewIndex],
               "Preview",
               `preview-${previewIndex}`,
-              {
-                maxHeight: '90vh',
-                maxWidth: '90vw',
-                objectFit: 'contain'
-              },
+              imageStyle(true),
               previewIndex
             )}
           </div>
@@ -218,13 +322,9 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
               prevImage();
             }}
             style={{
+              ...previewButtonStyle,
               position: 'absolute',
-              left: '24px',
-              backgroundColor: 'white',
-              borderRadius: '50%',
-              padding: '12px',
-              cursor: 'pointer',
-              border: 'none'
+              left: isMobile ? '16px' : '5vw'
             }}
           >
             <ChevronLeft size={24} />
@@ -236,16 +336,24 @@ export const ImageSlideshow = ({ images }: ImageSlideshowProps) => {
               nextImage();
             }}
             style={{
+              ...previewButtonStyle,
               position: 'absolute',
-              right: '24px',
-              backgroundColor: 'white',
-              borderRadius: '50%',
-              padding: '12px',
-              cursor: 'pointer',
-              border: 'none'
+              right: isMobile ? '16px' : '5vw'
             }}
           >
             <ChevronRight size={24} />
+          </button>
+
+          <button
+            onClick={() => setShowPreview(false)}
+            style={{
+              ...previewButtonStyle,
+              position: 'absolute',
+              top: '16px',
+              right: '16px'
+            }}
+          >
+            <X size={24} />
           </button>
         </div>
       )}

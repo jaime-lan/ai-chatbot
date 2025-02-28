@@ -100,47 +100,50 @@ const Tool = ({
   };
 
   return (
-    <Tooltip open={isHovered && !isAnimating}>
-      <TooltipTrigger asChild>
-        <motion.div
-          className={cx('p-3 rounded-full', {
-            'bg-primary !text-primary-foreground': selectedTool === description,
-          })}
-          onHoverStart={() => {
-            setIsHovered(true);
-          }}
-          onHoverEnd={() => {
-            if (selectedTool !== description) setIsHovered(false);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <motion.div
+            className={cx('p-3 rounded-full', {
+              'bg-primary !text-primary-foreground': selectedTool === description,
+            })}
+            onHoverStart={() => {
+              setIsHovered(true);
+            }}
+            onHoverEnd={() => {
+              if (selectedTool !== description) setIsHovered(false);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                handleSelect();
+              }
+            }}
+            initial={{ scale: 1, opacity: 0 }}
+            animate={{ opacity: 1, transition: { delay: 0.1 } }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            exit={{
+              scale: 0.9,
+              opacity: 0,
+              transition: { duration: 0.1 },
+            }}
+            onClick={() => {
               handleSelect();
-            }
-          }}
-          initial={{ scale: 1, opacity: 0 }}
-          animate={{ opacity: 1, transition: { delay: 0.1 } }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          exit={{
-            scale: 0.9,
-            opacity: 0,
-            transition: { duration: 0.1 },
-          }}
-          onClick={() => {
-            handleSelect();
-          }}
+            }}
+          >
+            {selectedTool === description ? <ArrowUpIcon /> : icon}
+          </motion.div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="left"
+          sideOffset={16}
+          className="bg-foreground text-background rounded-2xl p-3 px-4"
+          hidden={!isHovered || isAnimating}
         >
-          {selectedTool === description ? <ArrowUpIcon /> : icon}
-        </motion.div>
-      </TooltipTrigger>
-      <TooltipContent
-        side="left"
-        sideOffset={16}
-        className="bg-foreground text-background rounded-2xl p-3 px-4"
-      >
-        {description}
-      </TooltipContent>
-    </Tooltip>
+          {description}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
@@ -201,7 +204,7 @@ const ReadingLevelSelector = ({
       ))}
 
       <TooltipProvider>
-        <Tooltip open={!isAnimating}>
+        <Tooltip>
           <TooltipTrigger asChild>
             <motion.div
               className={cx(
